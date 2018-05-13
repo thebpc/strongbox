@@ -6,7 +6,7 @@ import org.carlspring.strongbox.repository.RepositoryManagementStrategyException
 import org.carlspring.strongbox.storage.repository.RepositoryDto;
 import org.carlspring.strongbox.storage.repository.NpmRepositoryFactory;
 import org.carlspring.strongbox.storage.repository.RepositoryTypeEnum;
-import org.carlspring.strongbox.storage.repository.remote.MutableRemoteRepository;
+import org.carlspring.strongbox.storage.repository.remote.RemoteRepositoryDto;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
@@ -40,7 +40,7 @@ public class NpmRepositoryTestCase
                    JAXBException,
                    RepositoryManagementStrategyException
     {
-        MutableRemoteRepository remoteRepository = new MutableRemoteRepository();
+        RemoteRepositoryDto remoteRepository = new RemoteRepositoryDto();
         remoteRepository.setUrl(remoteRepositoryUrl);
 
         RepositoryDto repository = npmRepositoryFactory.createRepository(repositoryId);

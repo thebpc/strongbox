@@ -50,7 +50,7 @@ public class SBTDependencyFormatterTest
 
         assertEquals("libraryDependencies += \"" + coordinates.getGroupId() + "\" % \"" + coordinates.getArtifactId() + "\" % \"" + coordinates.getVersion() + "\"\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
 }

@@ -539,7 +539,7 @@ public class UserControllerTestIT
         //3. Generate token
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/{username}/generate-security-token", username)
+               .get(getContextBaseUrl() + "/{username}/create-security-token", username)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -585,7 +585,7 @@ public class UserControllerTestIT
         //3. Generate token
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/{username}/generate-security-token", input.getUsername())
+               .get(getContextBaseUrl() + "/{username}/create-security-token", input.getUsername())
                .peek()
                .then()
                .statusCode(HttpStatus.BAD_REQUEST.value())

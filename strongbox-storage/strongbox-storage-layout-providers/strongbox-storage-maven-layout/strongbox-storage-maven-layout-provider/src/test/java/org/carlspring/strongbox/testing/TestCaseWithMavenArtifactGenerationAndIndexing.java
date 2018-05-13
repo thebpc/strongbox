@@ -7,23 +7,17 @@ import org.carlspring.strongbox.locator.handlers.GenerateMavenMetadataOperation;
 import org.carlspring.strongbox.providers.io.RepositoryFiles;
 import org.carlspring.strongbox.providers.io.RepositoryPath;
 import org.carlspring.strongbox.providers.io.RootRepositoryPath;
-import org.carlspring.strongbox.providers.search.MavenIndexerSearchProvider;
-import org.carlspring.strongbox.providers.search.SearchException;
 import org.carlspring.strongbox.repository.RepositoryManagementStrategyException;
 import org.carlspring.strongbox.services.ArtifactResolutionService;
 import org.carlspring.strongbox.services.ArtifactSearchService;
 import org.carlspring.strongbox.services.RepositoryManagementService;
 import org.carlspring.strongbox.storage.Storage;
-import org.carlspring.strongbox.storage.indexing.IndexTypeEnum;
-import org.carlspring.strongbox.storage.indexing.RepositoryIndexManager;
-import org.carlspring.strongbox.storage.indexing.RepositoryIndexer;
 import org.carlspring.strongbox.storage.metadata.MavenMetadataManager;
 import org.carlspring.strongbox.storage.repository.*;
-import org.carlspring.strongbox.storage.repository.remote.MutableRemoteRepository;
+import org.carlspring.strongbox.storage.repository.remote.RemoteRepositoryDto;
 import org.carlspring.strongbox.storage.routing.MutableRoutingRule;
 import org.carlspring.strongbox.storage.routing.MutableRoutingRuleRepository;
 import org.carlspring.strongbox.storage.routing.RoutingRuleTypeEnum;
-import org.carlspring.strongbox.storage.search.SearchRequest;
 import org.carlspring.strongbox.yaml.configuration.repository.MavenRepositoryConfigurationDto;
 
 import javax.inject.Inject;
@@ -34,26 +28,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.io.ByteStreams;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.IndexUtils;
-import org.apache.maven.index.context.IndexingContext;
-import org.junit.jupiter.api.Assumptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author carlspring
@@ -63,9 +46,6 @@ public abstract class TestCaseWithMavenArtifactGenerationAndIndexing
         extends MavenTestCaseWithArtifactGeneration
 {
     private static final Logger logger = LoggerFactory.getLogger(TestCaseWithMavenArtifactGenerationAndIndexing.class);
-
-    @Inject
-    protected Optional<RepositoryIndexManager> repositoryIndexManager;
 
     @Inject
     private PropertiesBooter propertiesBooter;
@@ -100,7 +80,7 @@ public abstract class TestCaseWithMavenArtifactGenerationAndIndexing
         MavenRepositoryConfigurationDto repositoryConfiguration = new MavenRepositoryConfigurationDto();
         repositoryConfiguration.setIndexingEnabled(true);
 
-        MutableRemoteRepository remoteRepository = new MutableRemoteRepository();
+        RemoteRepositoryDto remoteRepository = new RemoteRepositoryDto();
         remoteRepository.setUrl(remoteRepositoryUrl);
 
         RepositoryDto repository = mavenRepositoryFactory.createRepository(repositoryId);
@@ -120,61 +100,6 @@ public abstract class TestCaseWithMavenArtifactGenerationAndIndexing
         MutableRoutingRule routingRule = MutableRoutingRule.create(groupStorageId, groupRepositoryId,
                                                                    repositories, rulePattern, type);
         configurationManagementService.addRoutingRule(routingRule);
-    }
-
-    public void dumpIndex(String storageId,
-                          String repositoryId)
-            throws IOException
-    {
-        dumpIndex(storageId, repositoryId, IndexTypeEnum.LOCAL.getType());
-    }
-
-    public void dumpIndex(String storageId,
-                          String repositoryId,
-                          String indexType)
-            throws IOException
-    {
-        if (!repositoryIndexManager.isPresent())
-        {
-            return;
-        }
-
-        String contextId = storageId + ":" + repositoryId + ":" + indexType;
-        RepositoryIndexer repositoryIndexer = repositoryIndexManager.get().getRepositoryIndexer(contextId);
-        if (repositoryIndexer == null)
-        {
-            logger.debug("Unable to find index for contextId " + contextId);
-            return;
-        }
-
-        IndexingContext indexingContext = repositoryIndexer.getIndexingContext();
-
-        final IndexSearcher searcher = indexingContext.acquireIndexSearcher();
-        try
-        {
-            logger.debug("Dumping index for " + storageId + ":" + repositoryId + ":" + indexType + "...");
-
-            final IndexReader ir = searcher.getIndexReader();
-            Bits liveDocs = MultiFields.getLiveDocs(ir);
-            for (int i = 0; i < ir.maxDoc(); i++)
-            {
-                if (liveDocs == null || liveDocs.get(i))
-                {
-                    final Document doc = ir.document(i);
-                    final ArtifactInfo ai = IndexUtils.constructArtifactInfo(doc, indexingContext);
-                    if (ai != null)
-                    {
-                        System.out.println("\t" + ai.toString());
-                    }
-                }
-            }
-
-            logger.debug("Index dump completed.");
-        }
-        finally
-        {
-            indexingContext.releaseIndexSearcher(searcher);
-        }
     }
 
     protected void generateMavenMetadata(String storageId,
@@ -235,49 +160,6 @@ public abstract class TestCaseWithMavenArtifactGenerationAndIndexing
         }
     }
 
-    public void assertIndexContainsArtifact(String storageId,
-                                            String repositoryId,
-                                            String query)
-            throws SearchException
-    {
-        Assumptions.assumeTrue(repositoryIndexManager.isPresent());
-
-        boolean isContained = indexContainsArtifact(storageId, repositoryId, query);
-
-        assertTrue(isContained);
-    }
-
-    public boolean indexContainsArtifact(String storageId,
-                                         String repositoryId,
-                                         String query)
-            throws SearchException
-    {
-        SearchRequest request = new SearchRequest(storageId,
-                                                  repositoryId,
-                                                  query,
-                                                  MavenIndexerSearchProvider.ALIAS);
-
-        return artifactSearchService.contains(request);
-    }
-
-    protected void closeIndexersForRepository(String storageId,
-                                              String repositoryId)
-            throws IOException
-    {
-        if (repositoryIndexManager.isPresent())
-        {
-            repositoryIndexManager.get().closeIndexersForRepository(storageId, repositoryId);
-        }
-    }
-
-    public void closeIndexer(String contextId)
-            throws IOException
-    {
-        if (repositoryIndexManager.isPresent())
-        {
-            repositoryIndexManager.get().closeIndexer(contextId);
-        }
-    }
 
     public RepositoryManagementService getRepositoryManagementService()
     {
@@ -292,7 +174,6 @@ public abstract class TestCaseWithMavenArtifactGenerationAndIndexing
         for (RepositoryDto mutableRepository : repositoriesToClean)
         {
             RootRepositoryPath repositoryPath = repositoryPathResolver.resolve(new RepositoryData(mutableRepository));
-            closeIndexersForRepository(mutableRepository.getStorage().getId(), mutableRepository.getId());
 
             Files.delete(repositoryPath);
         }

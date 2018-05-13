@@ -6,7 +6,7 @@ import org.carlspring.strongbox.rest.client.RestAssuredArtifactClient;
 import org.carlspring.strongbox.storage.repository.RepositoryDto;
 import org.carlspring.strongbox.storage.repository.NpmRepositoryFactory;
 import org.carlspring.strongbox.storage.repository.RepositoryTypeEnum;
-import org.carlspring.strongbox.storage.repository.remote.MutableRemoteRepository;
+import org.carlspring.strongbox.storage.repository.remote.RemoteRepositoryDto;
 import org.carlspring.strongbox.testing.NpmRepositoryTestCase;
 import org.carlspring.strongbox.users.domain.Privileges;
 
@@ -102,7 +102,7 @@ public abstract class NpmRestAssuredBaseTest
                    JAXBException,
                    RepositoryManagementStrategyException
     {
-        MutableRemoteRepository remoteRepository = new MutableRemoteRepository();
+        RemoteRepositoryDto remoteRepository = new RemoteRepositoryDto();
         remoteRepository.setUrl(remoteRepositoryUrl);
 
         RepositoryDto repository = npmRepositoryFactory.createRepository(repositoryId);

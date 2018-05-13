@@ -55,7 +55,7 @@ public class LeiningenDependencyFormatterTest
 
         assertEquals("[org.carlspring.strongbox/maven-snippet \"1.0\"]\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class LeiningenDependencyFormatterTest
 
         assertEquals("[org.carlspring.strongbox/maven-snippet \"1.0\" :extension \"zip\"]\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -94,7 +94,7 @@ public class LeiningenDependencyFormatterTest
 
         assertEquals("[org.carlspring.strongbox/maven-snippet \"1.0\" :extension \"zip\" :classifier \"jdk12\"]\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -113,7 +113,7 @@ public class LeiningenDependencyFormatterTest
 
         assertEquals("[org.carlspring.strongbox/maven-snippet \"1.0\" :classifier \"jdk12\"]\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
 }

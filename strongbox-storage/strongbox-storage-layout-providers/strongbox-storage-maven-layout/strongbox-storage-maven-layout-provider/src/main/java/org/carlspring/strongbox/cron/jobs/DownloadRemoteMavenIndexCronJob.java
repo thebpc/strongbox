@@ -1,15 +1,19 @@
 package org.carlspring.strongbox.cron.jobs;
 
-import org.carlspring.strongbox.config.MavenIndexerEnabledCondition;
+import org.carlspring.strongbox.configuration.ConfigurationManager;
 import org.carlspring.strongbox.cron.domain.CronTaskConfigurationDto;
 import org.carlspring.strongbox.cron.jobs.fields.*;
-import org.carlspring.strongbox.repository.IndexedMavenRepositoryFeatures;
+import org.carlspring.strongbox.storage.indexing.IndexTypeEnum;
+import org.carlspring.strongbox.storage.indexing.RepositoryIndexFounder;
+import org.carlspring.strongbox.storage.repository.Repository;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 import org.springframework.core.env.Environment;
+import static org.carlspring.strongbox.storage.indexing.RepositoryIndexFounder.RepositoryIndexFounderQualifier;
 
 /**
  * @author Kate Novik
@@ -32,18 +36,24 @@ public class DownloadRemoteMavenIndexCronJob
                     new CronJobOptionalField(new CronJobNamedField(PROPERTY_REPOSITORY_ID)))));
 
     @Inject
-    private IndexedMavenRepositoryFeatures features;
+    @RepositoryIndexFounderQualifier(IndexTypeEnum.REMOTE)
+    private RepositoryIndexFounder repositoryIndexFounder;
+
+    @Inject
+    private ConfigurationManager configurationManager;
 
     @Override
     public void executeTask(CronTaskConfigurationDto config)
-            throws Throwable
+            throws IOException
     {
         logger.debug("Executing DownloadRemoteIndexCronJob.");
 
         String storageId = config.getProperty(PROPERTY_STORAGE_ID);
         String repositoryId = config.getProperty(PROPERTY_REPOSITORY_ID);
 
-        features.downloadRemoteIndex(storageId, repositoryId);
+        Repository repository = configurationManager.getRepository(storageId, repositoryId);
+
+        repositoryIndexFounder.apply(repository);
     }
 
     @Override
@@ -51,13 +61,6 @@ public class DownloadRemoteMavenIndexCronJob
                            Environment env)
     {
         if (!super.enabled(configuration, env))
-        {
-            return false;
-        }
-
-        boolean mavenIndexerEnabled = Boolean.parseBoolean(
-                env.getProperty(MavenIndexerEnabledCondition.MAVEN_INDEXER_ENABLED));
-        if (!mavenIndexerEnabled)
         {
             return false;
         }

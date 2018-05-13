@@ -67,7 +67,7 @@ public class UserController
 
     public static final String SUCCESSFUL_GENERATE_SECURITY_TOKEN = "The security token was generated.";
 
-    public static final String FAILED_GENERATE_SECURITY_TOKEN = "Failed to generate SecurityToken";
+    public static final String FAILED_GENERATE_SECURITY_TOKEN = "Failed to create SecurityToken";
 
     public static final String SUCCESSFUL_UPDATE_ACCESS_MODEL = "The custom access model was updated.";
 
@@ -239,7 +239,7 @@ public class UserController
                             @ApiResponse(code = 400, message = FAILED_GENERATE_SECURITY_TOKEN),
                             @ApiResponse(code = 404, message = NOT_FOUND_USER) })
     @PreAuthorize("hasAuthority('UPDATE_USER')")
-    @GetMapping(value = "{username}/generate-security-token",
+    @GetMapping(value = "{username}/create-security-token",
                 produces = { MediaType.TEXT_PLAIN_VALUE,
                              MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity generateSecurityToken(@ApiParam(value = "The name of the user") @PathVariable String username,
@@ -255,7 +255,7 @@ public class UserController
         String securityToken = userService.generateSecurityToken(username);
         if (securityToken == null)
         {
-            String message = String.format("Failed to generate SecurityToken, probably you should first set " +
+            String message = String.format("Failed to create SecurityToken, probably you should first set " +
                                            "SecurityTokenKey for the user: %s", username);
 
             return getFailedResponseEntity(HttpStatus.BAD_REQUEST, message, accept);

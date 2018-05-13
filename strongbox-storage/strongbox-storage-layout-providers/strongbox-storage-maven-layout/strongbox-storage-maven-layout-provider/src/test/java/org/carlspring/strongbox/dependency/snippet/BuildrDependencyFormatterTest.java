@@ -57,7 +57,7 @@ public class BuildrDependencyFormatterTest
 
         assertEquals("org.carlspring.strongbox:maven-snippet:jar:1.0",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -77,7 +77,7 @@ public class BuildrDependencyFormatterTest
 
         assertEquals("org.carlspring.strongbox:maven-snippet:jar:jdk12:1.0",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -96,7 +96,7 @@ public class BuildrDependencyFormatterTest
 
         assertEquals("org.carlspring.strongbox:maven-snippet:zip:1.0",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 }
 

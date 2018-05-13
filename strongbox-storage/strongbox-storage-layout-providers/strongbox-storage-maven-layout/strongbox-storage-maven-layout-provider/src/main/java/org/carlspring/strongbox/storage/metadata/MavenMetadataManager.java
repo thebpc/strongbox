@@ -187,7 +187,7 @@ public class MavenMetadataManager
         MetadataHelper.setLastUpdated(versioning);
 
         /**
-         * In a release repository we only need to generate maven-metadata.xml in the artifactBasePath
+         * In a release repository we only need to create maven-metadata.xml in the artifactBasePath
          * (i.e. org/foo/bar/maven-metadata.xml)
          */
         if (repository.getPolicy().equals(RepositoryPolicyEnum.RELEASE.getPolicy()))
@@ -216,8 +216,8 @@ public class MavenMetadataManager
                          artifactId + ".");
         }
         /**
-         * In a snapshot repository we need to generate maven-metadata.xml in the artifactBasePath and
-         * generate additional maven-metadata.xml files for each snapshot directory containing information about
+         * In a snapshot repository we need to create maven-metadata.xml in the artifactBasePath and
+         * create additional maven-metadata.xml files for each snapshot directory containing information about
          * all available artifacts.
          */
         else if (repository.getPolicy().equals(RepositoryPolicyEnum.SNAPSHOT.getPolicy()))

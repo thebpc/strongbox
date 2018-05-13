@@ -200,7 +200,7 @@ public class BrowseController
         }
         catch (Exception e)
         {
-            String message = "Failed to generate repository directory listing.";
+            String message = "Failed to create repository directory listing.";
             return getExceptionResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, message, e, acceptHeader);
         }
     }

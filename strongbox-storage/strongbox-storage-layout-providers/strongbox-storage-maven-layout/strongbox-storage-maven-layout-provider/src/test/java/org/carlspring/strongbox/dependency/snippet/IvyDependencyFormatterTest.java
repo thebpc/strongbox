@@ -52,7 +52,7 @@ public class IvyDependencyFormatterTest
                      " name=\"" + coordinates.getArtifactId() + "\"" +
                      " rev=\"" + coordinates.getVersion() + "\" />\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
 

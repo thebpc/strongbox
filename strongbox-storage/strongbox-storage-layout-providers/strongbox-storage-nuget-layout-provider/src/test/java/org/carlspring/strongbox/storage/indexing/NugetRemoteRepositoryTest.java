@@ -15,7 +15,7 @@ import org.carlspring.strongbox.storage.Storage;
 import org.carlspring.strongbox.storage.repository.RepositoryDto;
 import org.carlspring.strongbox.storage.repository.NugetRepositoryFactory;
 import org.carlspring.strongbox.storage.repository.Repository;
-import org.carlspring.strongbox.storage.repository.remote.MutableRemoteRepository;
+import org.carlspring.strongbox.storage.repository.remote.RemoteRepositoryDto;
 import org.carlspring.strongbox.testing.TestCaseWithRepository;
 
 import javax.inject.Inject;
@@ -89,7 +89,7 @@ public class NugetRemoteRepositoryTest
     {
         RepositoryDto repository = nugetRepositoryFactory.createRepository(REPOSITORY_PROXY);
         repository.setType("proxy");
-        repository.setRemoteRepository(new MutableRemoteRepository());
+        repository.setRemoteRepository(new RemoteRepositoryDto());
         repository.getRemoteRepository().setUrl("https://www.nuget.org/api/v2");
 
         configurationManagementService.saveRepository(NUGET_COMMON_STORAGE, repository);

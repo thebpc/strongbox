@@ -17,7 +17,7 @@ import org.carlspring.strongbox.storage.repository.RepositoryData;
 import org.carlspring.strongbox.storage.repository.RepositoryDto;
 import org.carlspring.strongbox.storage.repository.Repository;
 import org.carlspring.strongbox.storage.repository.RepositoryTypeEnum;
-import org.carlspring.strongbox.storage.repository.remote.MutableRemoteRepository;
+import org.carlspring.strongbox.storage.repository.remote.RemoteRepositoryDto;
 import org.carlspring.strongbox.testing.NpmRepositoryTestCase;
 import org.carlspring.strongbox.yaml.configuration.repository.remote.NpmRemoteRepositoryConfigurationDto;
 import org.carlspring.strongbox.yaml.configuration.repository.remote.NpmRemoteRepositoryConfiguration;
@@ -134,7 +134,7 @@ public class FetchChangesFeedCronJobTestIT
         RepositoryDto repository = createRepositoryMock(STORAGE, REPOSITORY, NpmLayoutProvider.ALIAS);
         repository.setType(RepositoryTypeEnum.PROXY.getType());
 
-        MutableRemoteRepository remoteRepository = new MutableRemoteRepository();
+        RemoteRepositoryDto remoteRepository = new RemoteRepositoryDto();
         repository.setRemoteRepository(remoteRepository);
 
         remoteRepository.setUrl("https://registry.npmjs.org");

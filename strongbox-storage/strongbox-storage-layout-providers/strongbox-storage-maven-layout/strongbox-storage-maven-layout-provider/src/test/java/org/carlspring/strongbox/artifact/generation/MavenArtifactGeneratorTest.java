@@ -57,13 +57,13 @@ public class MavenArtifactGeneratorTest
         Path artifactPomPathMd5 = Paths.get(artifactPath.toString().replaceAll("jar", "pom") + ".md5");
         Path artifactPomPathSha1 = Paths.get(artifactPath.toString().replaceAll("jar", "pom") + ".sha1");
 
-        assertTrue(Files.exists(artifactPath), "Failed to generate JAR file!");
-        assertTrue(Files.exists(artifactJarPathMd5), "Failed to generate JAR MD5 file!");
-        assertTrue(Files.exists(artifactJarPathSha1), "Failed to generate JAR SHA1 file!");
+        assertTrue(Files.exists(artifactPath), "Failed to create JAR file!");
+        assertTrue(Files.exists(artifactJarPathMd5), "Failed to create JAR MD5 file!");
+        assertTrue(Files.exists(artifactJarPathSha1), "Failed to create JAR SHA1 file!");
 
-        assertTrue(Files.exists(artifactPomPath), "Failed to generate POM file!");
-        assertTrue(Files.exists(artifactPomPathMd5), "Failed to generate POM MD5 file!");
-        assertTrue(Files.exists(artifactPomPathSha1), "Failed to generate POM SHA1 file!");
+        assertTrue(Files.exists(artifactPomPath), "Failed to create POM file!");
+        assertTrue(Files.exists(artifactPomPathMd5), "Failed to create POM MD5 file!");
+        assertTrue(Files.exists(artifactPomPathSha1), "Failed to create POM SHA1 file!");
 
         String expectedJarMD5 = calculateChecksum(artifactPath, "MD5");
         String expectedJarSHA1 = calculateChecksum(artifactPath, "SHA1");

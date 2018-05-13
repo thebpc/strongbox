@@ -50,7 +50,7 @@ public class GradleDependencyFormatterTest
 
         assertEquals("compile \"org.carlspring.strongbox:maven-snippet:1.0\"\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class GradleDependencyFormatterTest
         // compile "org.gradle.test.classifiers:service:1.0:jdk15@jar"
         assertEquals("compile \"org.carlspring.strongbox:maven-snippet:1.0:jdk12\"\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class GradleDependencyFormatterTest
         // compile "org.gradle.test.classifiers:service:1.0:jdk15@jar"
         assertEquals("compile \"org.carlspring.strongbox:maven-snippet:1.0:jdk12@zip\"\n",
                      snippet,
-                     "Failed to generate dependency!");
+                     "Failed to create dependency!");
     }
 
 }

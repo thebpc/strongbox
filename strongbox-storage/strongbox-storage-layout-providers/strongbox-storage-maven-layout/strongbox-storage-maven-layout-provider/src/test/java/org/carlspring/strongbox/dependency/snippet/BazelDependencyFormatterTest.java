@@ -51,7 +51,7 @@ public class BazelDependencyFormatterTest
 
         assertEquals("maven_jar(\n    name = \"maven-snippet\","
                      + "\n    artifact = \"org.carlspring.strongbox:maven-snippet:1.0\",\n)\n",
-                     snippet, "Failed to generate dependency!");
+                     snippet, "Failed to create dependency!");
 
     }
 
@@ -77,7 +77,7 @@ public class BazelDependencyFormatterTest
 
         System.out.print(snippet);
 
-        assertEquals("maven_jar(\n    name = \"maven-snippet\",\n)\n", snippet, "Failed to generate dependency!");
+        assertEquals("maven_jar(\n    name = \"maven-snippet\",\n)\n", snippet, "Failed to create dependency!");
 
 
     }
