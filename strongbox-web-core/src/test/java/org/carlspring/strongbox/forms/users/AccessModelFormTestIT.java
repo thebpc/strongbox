@@ -28,6 +28,8 @@ import org.hamcrest.Matchers;
 import org.hamcrest.core.IsCollectionContaining;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -37,7 +39,8 @@ import com.google.common.collect.Lists;
  * @author Pablo Tirado
  */
 @IntegrationTest
-public class AccessModelFormTest
+@Execution(CONCURRENT)
+public class AccessModelFormTestIT
         extends RestAssuredBaseTest
 {
 
