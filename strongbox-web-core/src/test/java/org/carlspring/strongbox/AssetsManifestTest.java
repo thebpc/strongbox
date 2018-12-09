@@ -21,9 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * Test cases which check if UI assets are accessible.
@@ -31,19 +33,27 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class AssetsManifestTest
 {
 
     private static final String FILE_RESOURCE = "assets-manifest.json";
+
     private static final String ROOT_PATH = "/";
+
     private static final Pattern STYLES_REGEX = Pattern.compile("\\/static\\/assets\\/styles(.+).css");
+
     private static final Pattern RUNTIME_REGEX = Pattern.compile("\\/static\\/assets\\/runtime(.+).js");
+
     private static final Pattern POLYFILLS_REGEX = Pattern.compile("\\/static\\/assets\\/polyfills(.+).js");
+
     private static final Pattern MAIN_REGEX = Pattern.compile("\\/static\\/assets\\/main(.+).js");
+
     private static List<Pattern> indexResourcePatterns;
 
     @Inject
     private ObjectMapper mapper;
+
 
     @BeforeAll
     static void init()
@@ -136,4 +146,5 @@ public class AssetsManifestTest
             assertTrue(matcher.find(), String.format("The resource \"%s\" is not found in index.html.", pattern.toString()));
         }
     }
+
 }
