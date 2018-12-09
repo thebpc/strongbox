@@ -8,18 +8,20 @@ import javax.inject.Inject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class CustomLoginSupplierTest
 {
 
@@ -31,7 +33,6 @@ public class CustomLoginSupplierTest
 
     @Test
     public void shouldSupportExpectedRequest()
-            throws Exception
     {
         MockHttpServletRequest request = new MockHttpServletRequest("post", "/api/login");
         request.setContentType("application/json");
@@ -41,7 +42,6 @@ public class CustomLoginSupplierTest
 
     @Test
     public void shouldNotSupportGetRequest()
-            throws Exception
     {
         MockHttpServletRequest request = new MockHttpServletRequest("get", "/api/login");
         request.setContentType("application/json");
@@ -51,7 +51,6 @@ public class CustomLoginSupplierTest
 
     @Test
     public void shouldNotSupportXmlRequest()
-            throws Exception
     {
         MockHttpServletRequest request = new MockHttpServletRequest("post", "/api/login");
         request.setContentType("application/xml");
@@ -63,7 +62,6 @@ public class CustomLoginSupplierTest
     public void shouldSupply()
             throws Exception
     {
-
         LoginInput loginInput = new LoginInput();
         loginInput.setUsername("przemyslaw");
         loginInput.setPassword("fusik");
