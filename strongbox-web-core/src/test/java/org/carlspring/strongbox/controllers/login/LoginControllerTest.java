@@ -1,11 +1,5 @@
 package org.carlspring.strongbox.controllers.login;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-
-import javax.inject.Inject;
-
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.forms.users.UserForm;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
@@ -13,23 +7,30 @@ import org.carlspring.strongbox.users.dto.UserDto;
 import org.carlspring.strongbox.users.service.UserService;
 import org.carlspring.strongbox.users.service.impl.EncodedPasswordUser;
 import org.carlspring.strongbox.users.service.impl.OrientDbUserService.OrientDb;
+
+import javax.inject.Inject;
+
+import com.google.common.collect.ImmutableSet;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-
-import com.google.common.collect.ImmutableSet;
-
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class LoginControllerTest
         extends RestAssuredBaseTest
 {
@@ -40,7 +41,7 @@ public class LoginControllerTest
 
     @Inject
     private PasswordEncoder passwordEncoder;
-    
+
     @Override
     @BeforeEach
     public void init()
@@ -132,7 +133,7 @@ public class LoginControllerTest
         cacheEvictionTestUser.setSecurityTokenKey("admin-cache-eviction-test-secret");
         userService.save(new EncodedPasswordUser(cacheEvictionTestUser, passwordEncoder));
 
-        
+
         LoginInput loginInput = new LoginInput();
         loginInput.setUsername("admin-cache-eviction-test");
         loginInput.setPassword("password");
