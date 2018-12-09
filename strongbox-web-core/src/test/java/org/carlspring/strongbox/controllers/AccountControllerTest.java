@@ -1,20 +1,5 @@
 package org.carlspring.strongbox.controllers;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Arrays;
-import java.util.HashSet;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
-import org.apache.http.HttpHeaders;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.forms.users.UserForm;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
@@ -22,20 +7,37 @@ import org.carlspring.strongbox.users.dto.User;
 import org.carlspring.strongbox.users.dto.UserDto;
 import org.carlspring.strongbox.users.service.UserService;
 import org.carlspring.strongbox.users.service.impl.OrientDbUserService.OrientDb;
+
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Steve Todorov
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class AccountControllerTest
         extends RestAssuredBaseTest
 {
@@ -68,7 +70,6 @@ public class AccountControllerTest
     @Test
     @WithUserDetails("admin")
     public void testGetAccountDetails()
-            throws Exception
     {
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
@@ -83,7 +84,6 @@ public class AccountControllerTest
     @WithUserDetails(TEST_DISABLED_USER_ACCOUNT)
     @Transactional
     public void testGetAccountDetailsOnDisabledUserShouldFail()
-            throws Exception
     {
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
@@ -91,14 +91,12 @@ public class AccountControllerTest
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.FORBIDDEN.value())
-               .body("error", notNullValue())
-        ;
+               .body("error", notNullValue());
     }
 
     @Test
     @WithMockUser(username = "test-account-update", authorities = {"AUTHENTICATED_USER"})
     public void testUpdateAccountDetails()
-            throws Exception
     {
         UserDto testUser = new UserDto();
         testUser.setUsername("test-account-update");
@@ -164,6 +162,7 @@ public class AccountControllerTest
         testUser.setPassword("password");
         testUser.setRoles(null);
         testUser.setEnabled(true);
+
         userService.save(testUser);
 
         // Tru to change roles
@@ -207,7 +206,7 @@ public class AccountControllerTest
     public void testChangingPasswordToNullShouldNotUpdate()
     {
         final String username = "test-account-update-empty-password";
-        
+
         UserDto testUser = new UserDto();
         testUser.setUsername(username);
         testUser.setPassword("password");
