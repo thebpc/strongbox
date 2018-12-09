@@ -4,14 +4,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  */
+@Execution(CONCURRENT)
 public class DirectoryTraversalFilterTest
 {
 
