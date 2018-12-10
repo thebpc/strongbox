@@ -13,8 +13,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,12 +22,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class CorsConfigurationControllerTest
         extends RestAssuredBaseTest
 {
@@ -38,14 +39,13 @@ public class CorsConfigurationControllerTest
 
     private Map<String, CorsConfiguration> initialConfiguration;
 
-    private static final String url = "/api/configuration/cors";
-
     @Override
     @BeforeEach
     public void init()
             throws Exception
     {
         super.init();
+        setContextBaseUrl("/api/configuration/cors");
         initialConfiguration = new HashMap<>(
                 ((UrlBasedCorsConfigurationSource) corsConfigurationSource).getCorsConfigurations());
     }
@@ -63,7 +63,7 @@ public class CorsConfigurationControllerTest
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.emptyList()))
                .when()
-               .put(url)
+               .put(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -72,7 +72,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(url)
+               .get(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -87,7 +87,7 @@ public class CorsConfigurationControllerTest
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.emptyList()))
                .when()
-               .put(url)
+               .put(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -96,7 +96,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(url)
+               .get(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -106,20 +106,20 @@ public class CorsConfigurationControllerTest
     @Test
     public void testAllowOneOrigin()
     {
-        given().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-               .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.singletonList("http://example.com")))
                .when()
-               .put(url)
+               .put(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
                .body("message", containsString(CorsConfigurationController.SUCCESSFUL_UPDATE));
 
         // follow-up check to ensure records has been properly saved.
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(url)
+               .get(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -133,7 +133,7 @@ public class CorsConfigurationControllerTest
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.singletonList("*")))
                .when()
-               .put(url)
+               .put(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -142,7 +142,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(url)
+               .get(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -153,20 +153,20 @@ public class CorsConfigurationControllerTest
     @Test
     public void testAllowMultipleOrigins()
     {
-        given().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-               .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Arrays.asList("http://example.com", "https://github.com/strongbox", "http://carlspring.org")))
                .when()
-               .put(url)
+               .put(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
                .body("message", containsString(CorsConfigurationController.SUCCESSFUL_UPDATE));
 
         // follow-up check to ensure records has been properly saved.
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(url)
+               .get(getContextBaseUrl())
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())

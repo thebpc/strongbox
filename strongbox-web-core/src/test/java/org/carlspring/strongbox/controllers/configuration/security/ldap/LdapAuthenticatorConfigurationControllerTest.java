@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.*;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -31,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
@@ -38,11 +40,12 @@ import static org.hamcrest.CoreMatchers.startsWith;
  * @author sbespalov
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 @ActiveProfiles({"LdapAuthenticatorConfigurationControllerTest","test"})
 public class LdapAuthenticatorConfigurationControllerTest
         extends RestAssuredBaseTest
 {
-    
+
     @Inject
     private ConfigurableProviderManager providerManager;
 
@@ -52,13 +55,13 @@ public class LdapAuthenticatorConfigurationControllerTest
     @Override
     @BeforeEach
     public void init()
-        throws Exception
+            throws Exception
     {
         super.init();
 
         setContextBaseUrl("/api/configuration/ldap");
         providerManager.reload();
-        
+
         AuthenticationItems authenticationItems = providerManager.getAuthenticationItems();
         List<AuthenticationItem> authenticationItemList = authenticationItems.getAuthenticationItemList();
         for (AuthenticationItem authenticationItem : authenticationItemList)
@@ -67,7 +70,7 @@ public class LdapAuthenticatorConfigurationControllerTest
             {
                 continue;
             }
-            
+
             authenticationItem.setEnabled(true);
         }
         providerManager.updateAuthenticationItems(authenticationItems);
@@ -159,7 +162,7 @@ public class LdapAuthenticatorConfigurationControllerTest
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
         form.setUsername("username");
         form.setPassword("password");
-        
+
         form.getConfiguration().setUrl(null);
 
         given().accept(MediaType.APPLICATION_JSON_VALUE)
@@ -181,7 +184,7 @@ public class LdapAuthenticatorConfigurationControllerTest
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
         form.setUsername("username");
         form.setPassword("password");
-        
+
         form.getConfiguration().setUrl("http://host:port?thisIsWrongUrl=true");
 
         given().accept(MediaType.APPLICATION_JSON_VALUE)
@@ -203,7 +206,7 @@ public class LdapAuthenticatorConfigurationControllerTest
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
         form.setUsername("mtodorov");
         form.setPassword("password");
-        
+
         List<String> userDnPatterns = new ArrayList<>();
         userDnPatterns.add("uid={0},ou=AllUsers");
 
@@ -234,7 +237,7 @@ public class LdapAuthenticatorConfigurationControllerTest
 
         form.setUsername("mtodorov");
         form.setPassword("password");
-        
+
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
@@ -245,7 +248,7 @@ public class LdapAuthenticatorConfigurationControllerTest
                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                .body("message", equalTo("Failed to test LDAP configuration."));
     }
-    
+
     @WithMockUser(authorities = "ADMIN")
     @Test
     public void ldapConfigurationTestShouldFailWithInvalidUserDn()
@@ -253,7 +256,7 @@ public class LdapAuthenticatorConfigurationControllerTest
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
         form.setUsername("daddy");
         form.setPassword("mummy");
-        
+
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
@@ -272,7 +275,7 @@ public class LdapAuthenticatorConfigurationControllerTest
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
         form.setUsername("mtodorov");
         form.setPassword("password");
-        
+
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
@@ -289,10 +292,10 @@ public class LdapAuthenticatorConfigurationControllerTest
     public void ldapConfigurationTestShouldNotAffectInternalConfiguration()
     {
         LdapConfigurationTestForm form = getLdapConfigurationTestForm();
-        
+
         form.setUsername("mtodorov");
         form.setPassword("password");
-        
+
         form.getConfiguration()
             .setRoleMappingList(Stream.of(new ExternalRoleMapping("ArtifactsManager", "ARTIFACTS_MANAGER"),
                                           new ExternalRoleMapping("LogsManager", "LOGS_MANAGER"))
@@ -319,20 +322,20 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setConfiguration(configuration);
         return form;
     }
-    
+
     @Configuration
     @Profile("LdapAuthenticatorConfigurationControllerTest")
     @Import(HazelcastConfiguration.class)
     @ImportResource("classpath:/ldapServerApplicationContext.xml")
-    public static class LdapAuthenticatorConfigurationControllerTestConfiguration 
+    public static class LdapAuthenticatorConfigurationControllerTestConfiguration
     {
-        
+
         @Primary
         @Bean
         public HazelcastInstanceId hazelcastInstanceIdLacct() {
             return new HazelcastInstanceId("LdapAuthenticatorConfigurationControllerTest-hazelcast-instance");
         }
-        
+
     }
 
 }
