@@ -11,6 +11,7 @@ import org.carlspring.strongbox.storage.repository.RepositoryTypeEnum;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.util.Set;
 import java.util.stream.Stream;
 
