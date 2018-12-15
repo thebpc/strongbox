@@ -15,12 +15,15 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Martin Todorov
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class RawArtifactControllerTestIT
         extends RawRestAssuredBaseTest
 {
