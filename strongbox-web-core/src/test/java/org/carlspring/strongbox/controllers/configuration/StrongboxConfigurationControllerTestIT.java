@@ -6,16 +6,19 @@ import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 import org.carlspring.strongbox.storage.StorageDto;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 import static org.carlspring.strongbox.net.MediaType.APPLICATION_YAML_VALUE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class StrongboxConfigurationControllerTestIT
         extends RestAssuredBaseTest
 {
