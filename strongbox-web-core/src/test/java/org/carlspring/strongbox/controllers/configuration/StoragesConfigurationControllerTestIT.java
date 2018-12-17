@@ -62,6 +62,14 @@ public class StoragesConfigurationControllerTestIT
     @Inject
     private ProxyRepositoryConnectionPoolConfigurationService proxyRepositoryConnectionPoolConfigurationService;
 
+    @Override
+    @BeforeEach
+    public void init()
+            throws Exception
+    {
+        super.init();
+        setContextBaseUrl("/api/configuration/strongbox/storages");
+    }
 
     static ProxyConfigurationForm createProxyConfiguration()
     {
@@ -78,38 +86,6 @@ public class StoragesConfigurationControllerTestIT
         proxyConfiguration.setNonProxyHosts(nonProxyHosts);
 
         return proxyConfiguration;
-    }
-
-    @Override
-    @BeforeEach
-    public void init()
-            throws Exception
-    {
-        super.init();
-
-        setContextBaseUrl("/api/configuration/strongbox/storages");
-
-        repositoryForm0 = new RepositoryForm();
-        repositoryForm0.setId("repository0");
-        repositoryForm0.setAllowsRedeployment(true);
-        repositoryForm0.setSecured(true);
-        repositoryForm0.setLayout(Maven2LayoutProvider.ALIAS);
-        repositoryForm0.setType("hosted");
-        repositoryForm0.setPolicy("release");
-        repositoryForm0.setImplementation("file-system");
-        repositoryForm0.setStatus("In Service");
-
-        repositoryForm1 = new RepositoryForm();
-        repositoryForm1.setId("repository1");
-        repositoryForm1.setAllowsForceDeletion(true);
-        repositoryForm1.setTrashEnabled(true);
-        repositoryForm1.setProxyConfiguration(createProxyConfiguration());
-        repositoryForm1.setLayout(Maven2LayoutProvider.ALIAS);
-        repositoryForm1.setType("hosted");
-        repositoryForm1.setPolicy("release");
-        repositoryForm1.setImplementation("file-system");
-        repositoryForm1.setStatus("In Service");
-        repositoryForm1.setGroupRepositories(ImmutableSet.of("repository0"));
     }
 
     private String getBaseDir(String storageId)
@@ -190,8 +166,32 @@ public class StoragesConfigurationControllerTestIT
                      .put(url)
                      .prettyPeek()
                      .then()
-                     .statusCode(OK)
-                     .body(containsString(SUCCESSFUL_SAVE_STORAGE));
+                     .statusCode(HttpStatus.OK.value());
+
+        RepositoryForm r1 = new RepositoryForm();
+        r1.setId("repository0");
+        r1.setAllowsRedeployment(true);
+        r1.setSecured(true);
+        r1.setLayout(Maven2LayoutProvider.ALIAS);
+        r1.setType("hosted");
+        r1.setPolicy("release");
+        r1.setImplementation("file-system");
+        r1.setStatus("In Service");
+
+        RepositoryForm r2 = new RepositoryForm();
+        r2.setId("repository1");
+        r2.setAllowsForceDeletion(true);
+        r2.setTrashEnabled(true);
+        r2.setProxyConfiguration(createProxyConfiguration());
+        r2.setLayout(Maven2LayoutProvider.ALIAS);
+        r2.setType("hosted");
+        r2.setPolicy("release");
+        r2.setImplementation("file-system");
+        r2.setStatus("In Service");
+        r2.setGroupRepositories(ImmutableSet.of("repository0"));
+
+        addRepository(r1, storage1);
+        addRepository(r2, storage1);
 
         Storage storage = getStorage(storageId);
 
