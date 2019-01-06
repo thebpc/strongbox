@@ -5,6 +5,7 @@ import org.carlspring.strongbox.authentication.api.AuthenticationItem;
 import org.carlspring.strongbox.authentication.api.AuthenticationItems;
 import org.carlspring.strongbox.authentication.external.ldap.LdapAuthenticationConfigurationManager;
 import org.carlspring.strongbox.authentication.external.ldap.LdapConfiguration;
+import org.carlspring.strongbox.authentication.external.ldap.LdapRoleMapping;
 import org.carlspring.strongbox.authentication.support.ExternalRoleMapping;
 import org.carlspring.strongbox.config.hazelcast.HazelcastConfiguration;
 import org.carlspring.strongbox.config.hazelcast.HazelcastInstanceId;
@@ -23,12 +24,11 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.*;
 import org.junit.jupiter.api.parallel.Execution;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @IntegrationTest
 @Execution(CONCURRENT)
-@ActiveProfiles({"LdapAuthenticatorConfigurationControllerTest","test"})
 public class LdapAuthenticatorConfigurationControllerTest
         extends RestAssuredBaseTest
 {
@@ -105,7 +104,7 @@ public class LdapAuthenticatorConfigurationControllerTest
     @WithMockUser(authorities = "ADMIN")
     @Test
     public void shouldUpdateFullLdapConfiguration()
-        throws IOException
+            throws IOException
     {
 
         LdapConfiguration configuration = ldapAuthenticationConfigurationManager.getConfiguration();
@@ -322,20 +321,20 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setConfiguration(configuration);
         return form;
     }
-
+    
     @Configuration
     @Profile("LdapAuthenticatorConfigurationControllerTest")
     @Import(HazelcastConfiguration.class)
     @ImportResource("classpath:/ldapServerApplicationContext.xml")
-    public static class LdapAuthenticatorConfigurationControllerTestConfiguration
+    public static class LdapAuthenticatorConfigurationControllerTestConfiguration 
     {
-
+        
         @Primary
         @Bean
-        public HazelcastInstanceId hazelcastInstanceIdLacct() {
+        public HazelcastInstanceId hazelcastInstanceId() {
             return new HazelcastInstanceId("LdapAuthenticatorConfigurationControllerTest-hazelcast-instance");
         }
-
+        
     }
 
 }
