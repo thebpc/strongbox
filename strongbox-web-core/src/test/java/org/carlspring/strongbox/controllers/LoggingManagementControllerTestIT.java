@@ -379,18 +379,6 @@ public class LoggingManagementControllerTestIT
         }
 
         assertTrue(shouldContainLogFilesInHtmlTableElement, "The log files should be in the HTML response body!");
-        //Assertion Test to see if given file names and test folder are contained in the HTML body
-        shouldContainLogFilesInHtmlTableElement = false;
-        if (tableElementsAsString.contains(tempLogFilesArray[0])
-            && tableElementsAsString.contains(tempLogFilesArray[1])
-            && tableElementsAsString.contains(tempLogFilesArray[2])
-            && tableElementsAsString.contains(tempLogFilesArray[3])
-            && tableElementsAsString.contains("test"))
-        {
-            shouldContainLogFilesInHtmlTableElement = true;
-        }
-        
-        assertTrue(shouldContainLogFilesInHtmlTableElement, "The log files should be in the HTML response body!");
     }
 
     //This method creates temporary log files, and if necessary for subdirectory browsing, a log subdirectory.
