@@ -13,7 +13,6 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,14 +21,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  * @author Pablo Tirado
  */
 @IntegrationTest
-@Execution(CONCURRENT)
 public class CorsConfigurationControllerTest
         extends RestAssuredBaseTest
 {

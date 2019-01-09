@@ -5,7 +5,6 @@ import org.carlspring.strongbox.authentication.api.AuthenticationItem;
 import org.carlspring.strongbox.authentication.api.AuthenticationItems;
 import org.carlspring.strongbox.authentication.external.ldap.LdapAuthenticationConfigurationManager;
 import org.carlspring.strongbox.authentication.external.ldap.LdapConfiguration;
-import org.carlspring.strongbox.authentication.external.ldap.LdapRoleMapping;
 import org.carlspring.strongbox.authentication.support.ExternalRoleMapping;
 import org.carlspring.strongbox.config.hazelcast.HazelcastConfiguration;
 import org.carlspring.strongbox.config.hazelcast.HazelcastInstanceId;

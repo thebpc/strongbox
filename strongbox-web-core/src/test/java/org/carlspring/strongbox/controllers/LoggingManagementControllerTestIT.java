@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +21,6 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Pablo Tirado
@@ -30,7 +28,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  */
 @Disabled // TODO migrate to https://docs.spring.io/spring-boot/docs/current/actuator-api/html/#loggers after https://github.com/strongbox/strongbox/issues/1000
 @IntegrationTest
-@Execution(CONCURRENT)
 public class LoggingManagementControllerTestIT
         extends RestAssuredBaseTest
 {

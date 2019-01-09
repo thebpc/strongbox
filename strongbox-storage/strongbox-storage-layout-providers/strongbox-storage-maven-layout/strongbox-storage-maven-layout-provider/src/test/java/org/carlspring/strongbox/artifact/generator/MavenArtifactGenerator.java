@@ -133,8 +133,11 @@ public class MavenArtifactGenerator implements ArtifactGenerator
                    XmlPullParserException,
                    NoSuchAlgorithmException
     {
-        generatePom(artifact, PACKAGING_JAR);
-        createArchive(artifact);
+        synchronized (ArtifactUtils.convertArtifactToPath(artifact))
+        {
+            generatePom(artifact, PACKAGING_JAR);
+            createArchive(artifact);
+        }
     }
 
     public void generate(Artifact artifact, String packaging)
@@ -142,8 +145,11 @@ public class MavenArtifactGenerator implements ArtifactGenerator
                    XmlPullParserException,
                    NoSuchAlgorithmException
     {
-        generatePom(artifact, packaging);
-        createArchive(artifact);
+        synchronized (ArtifactUtils.convertArtifactToPath(artifact))
+        {
+            generatePom(artifact, packaging);
+            createArchive(artifact);
+        }
     }
 
     public void createArchive(Artifact artifact)

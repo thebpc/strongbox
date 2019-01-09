@@ -37,13 +37,11 @@ import static org.carlspring.strongbox.controllers.configuration.StoragesConfigu
 import static org.carlspring.strongbox.rest.client.RestAssuredArtifactClient.OK;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Pablo Tirado
  */
 @IntegrationTest
-@Execution(CONCURRENT)
 public class StoragesConfigurationControllerTestIT
         extends RestAssuredBaseTest
 {
