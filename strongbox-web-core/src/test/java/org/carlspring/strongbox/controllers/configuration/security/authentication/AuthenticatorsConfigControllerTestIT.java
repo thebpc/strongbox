@@ -60,13 +60,6 @@ public class AuthenticatorsConfigControllerTestIT
             throws IOException
     {
         configurableProviderManager.reload();
-
-    }
-
-    @Test
-    public void registryShouldReturnExpectedInitialArray()
-    {
-        assertInitialAuthenticationItems();
     }
 
     private void assertInitialAuthenticationItems()
@@ -91,8 +84,6 @@ public class AuthenticatorsConfigControllerTestIT
                      equalByToString("authenticationProviderThird"))
                .body("authenticationItemList[2].order",
                      equalByToString("2"))
-               .body("authenticationItemList[2].enabled",
-                     equalByToString("false"))
                .body("authenticationItemList[3].name",
                      equalByToString("yamlUserDetailService"))
                .body("authenticationItemList[3].order",
@@ -136,8 +127,6 @@ public class AuthenticatorsConfigControllerTestIT
     @Test
     public void authenticationItemCanBeEnabled()
     {
-        assertInitialAuthenticationItems();
-
         AuthenticationItem authenticationItem = new AuthenticationItem("authenticationProviderThird",
                                                                        AuthenticationProvider.class.getSimpleName());
         authenticationItem.setEnabled(true);
