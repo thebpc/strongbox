@@ -23,7 +23,6 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +30,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
@@ -39,7 +37,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * @author sbespalov
  */
 @IntegrationTest
-@Execution(CONCURRENT)
 public class LdapAuthenticatorConfigurationControllerTest
         extends RestAssuredBaseTest
 {
@@ -320,20 +317,20 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setConfiguration(configuration);
         return form;
     }
-    
+
     @Configuration
     @Profile("LdapAuthenticatorConfigurationControllerTest")
     @Import(HazelcastConfiguration.class)
     @ImportResource("classpath:/ldapServerApplicationContext.xml")
-    public static class LdapAuthenticatorConfigurationControllerTestConfiguration 
+    public static class LdapAuthenticatorConfigurationControllerTestConfiguration
     {
-        
+
         @Primary
         @Bean
-        public HazelcastInstanceId hazelcastInstanceId() {
+        public HazelcastInstanceId hazelcastInstanceIdLacct() {
             return new HazelcastInstanceId("LdapAuthenticatorConfigurationControllerTest-hazelcast-instance");
         }
-        
+
     }
 
 }
