@@ -19,6 +19,7 @@ import java.nio.file.Path;
 
 import io.restassured.module.mockmvc.response.ValidatableMockMvcResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
  * @author Alex Oreshkevich
  * @author Pablo Tirado
  */
+@Disabled
 @IntegrationTest
 @Execution(CONCURRENT)
 public class TrashControllerTest

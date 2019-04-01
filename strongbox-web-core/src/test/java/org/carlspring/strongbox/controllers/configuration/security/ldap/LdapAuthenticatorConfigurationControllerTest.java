@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
  * @author Pablo Tirado
  * @author sbespalov
  */
+@Disabled
 @IntegrationTest
 public class LdapAuthenticatorConfigurationControllerTest
         extends RestAssuredBaseTest
