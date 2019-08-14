@@ -6,18 +6,21 @@ import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -25,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Pablo Tirado
  * @author Aditya Srinivasan
  */
-@Disabled // TODO migrate to https://docs.spring.io/spring-boot/docs/current/actuator-api/html/#loggers after https://github.com/strongbox/strongbox/issues/1000
+// TODO migrate to https://docs.spring.io/spring-boot/docs/current/actuator-api/html/#loggers after https://github.com/strongbox/strongbox/issues/1046
+@Disabled
 @IntegrationTest
 public class LoggingManagementControllerTestIT
         extends RestAssuredBaseTest
@@ -38,7 +42,6 @@ public class LoggingManagementControllerTestIT
     @Inject
     private PropertiesBooter propertiesBooter;
 
-
     @Override
     @BeforeEach
     public void init()
@@ -48,18 +51,23 @@ public class LoggingManagementControllerTestIT
         setContextBaseUrl("/api/logging");
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
     @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER" })
-    public void testAddLoggerWithTextAcceptHeader()
+    void testAddLogger(String acceptHeader)
     {
-        addLoggerWithTextAcceptHeader("org.carlspring.strongbox.logging.test.text", LOGGER_LEVEL, LOGGER_APPENDER);
+        addLogger(acceptHeader, "org.carlspring.strongbox.logging.test", LOGGER_LEVEL, LOGGER_APPENDER);
     }
 
-    private void addLoggerWithTextAcceptHeader(String loggerPackage, String level, String appender)
+    private void addLogger(String acceptHeader,
+                           String loggerPackage,
+                           String level,
+                           String appender)
     {
         String url = getContextBaseUrl() + "/logger";
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .param("logger", loggerPackage)
                .param("level", level)
                .param("appenderName", appender)
@@ -68,44 +76,23 @@ public class LoggingManagementControllerTestIT
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value()) // check http status code
-               .body(equalTo("The logger was added successfully."));
+               .body(containsString("The logger was added successfully."));
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER" })
-    public void testAddLoggerWithJsonAcceptHeader()
-    {
-        addLoggerWithJsonAcceptHeader("org.carlspring.strongbox.logging.test.json", LOGGER_LEVEL, LOGGER_APPENDER);
-    }
-
-    private void addLoggerWithJsonAcceptHeader(String loggerPackage, String level, String appender)
-    {
-        String url = getContextBaseUrl() + "/logger";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .param("logger", loggerPackage)
-               .param("level", level)
-               .param("appenderName", appender)
-               .when()
-               .put(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.OK.value()) // check http status code
-               .body("message", equalTo("The logger was added successfully."));
-    }
-
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
     @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER",
                                   "CONFIGURATION_UPDATE_LOGGER" })
-    public void testUpdateLoggerWithTextAcceptHeader()
+    void testUpdateLogger(String acceptHeader)
     {
-        String loggerPackage = "org.carlspring.strongbox.test.log.text.update";
+        String loggerPackage = "org.carlspring.strongbox.test.log.update";
 
-        addLoggerWithTextAcceptHeader(loggerPackage, LOGGER_LEVEL, LOGGER_APPENDER);
+        addLogger(acceptHeader, loggerPackage, LOGGER_LEVEL, LOGGER_APPENDER);
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -113,39 +100,19 @@ public class LoggingManagementControllerTestIT
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value()) // check http status code
-               .body(equalTo("The logger was updated successfully."));
+               .body(containsString("The logger was updated successfully."));
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER",
-                                  "CONFIGURATION_UPDATE_LOGGER" })
-    public void testUpdateLoggerWithJsonAcceptHeader()
-    {
-        String loggerPackage = "org.carlspring.strongbox.test.log.json.update";
-
-        addLoggerWithJsonAcceptHeader(loggerPackage, LOGGER_LEVEL, LOGGER_APPENDER);
-
-        String url = getContextBaseUrl() + "/logger";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .param("logger", loggerPackage)
-               .param("level", LOGGER_LEVEL)
-               .when()
-               .post(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.OK.value()) // check http status code
-               .body("message", equalTo("The logger was updated successfully."));
-    }
-
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
     @WithMockUser(authorities = { "CONFIGURATION_UPDATE_LOGGER" })
-    public void testUpdateLoggerNotFoundWithTextAcceptHeader()
+    void testUpdateLoggerNotFound(String acceptHeader)
     {
         String url = getContextBaseUrl() + "/logger";
-        String loggerPackage = "org.carlspring.strongbox.test.log.text.non.existing";
+        String loggerPackage = "org.carlspring.strongbox.test.log.non.existing";
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -153,108 +120,55 @@ public class LoggingManagementControllerTestIT
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.NOT_FOUND.value()) // check http status code
-               .body(equalTo("Logger '" + loggerPackage + "' not found!"));
+               .body(containsString("Logger '" + loggerPackage + "' not found!"));
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_UPDATE_LOGGER" })
-    public void testUpdateLoggerNotFoundWithJsonAcceptHeader()
-    {
-        String url = getContextBaseUrl() + "/logger";
-        String loggerPackage = "org.carlspring.strongbox.test.log.json.update.non.existing";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .param("logger", loggerPackage)
-               .param("level", LOGGER_LEVEL)
-               .when()
-               .post(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.NOT_FOUND.value()) // check http status code
-               .body("message", equalTo("Logger '" + loggerPackage + "' not found!"));
-    }
-
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
     @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER",
                                   "CONFIGURATION_DELETE_LOGGER" })
-    public void testDeleteLoggerWithTextAcceptHeader()
+    void testDeleteLogger(String acceptHeader)
     {
-        String packageName = "org.carlspring.strongbox.test.log.text.delete";
+        String packageName = "org.carlspring.strongbox.test.log.delete";
 
-        addLoggerWithTextAcceptHeader(packageName, LOGGER_LEVEL, LOGGER_APPENDER);
+        addLogger(acceptHeader, packageName, LOGGER_LEVEL, LOGGER_APPENDER);
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .param("logger", packageName)
                .when()
                .delete(url)
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value()) // check http status code
-               .body(equalTo("The logger was deleted successfully."));
+               .body(containsString("The logger was deleted successfully."));
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_ADD_LOGGER",
-                                  "CONFIGURATION_DELETE_LOGGER" })
-    public void testDeleteLoggerWithJsonAcceptHeader()
-    {
-        String packageName = "org.carlspring.strongbox.test.log.json.delete";
-
-        addLoggerWithJsonAcceptHeader(packageName, LOGGER_LEVEL, LOGGER_APPENDER);
-
-        String url = getContextBaseUrl() + "/logger";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .param("logger", packageName)
-               .when()
-               .delete(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.OK.value()) // check http status code
-               .body("message", equalTo("The logger was deleted successfully."));
-    }
-
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
     @WithMockUser(authorities = { "CONFIGURATION_DELETE_LOGGER" })
-    public void testDeleteLoggerNotFoundWithTextAcceptHeader()
+    void testDeleteLoggerNotFound(String acceptHeader)
     {
         String url = getContextBaseUrl() + "/logger";
 
-        String loggerPackage = "org.carlspring.strongbox.test.log.text.delete.non.existing";
+        String loggerPackage = "org.carlspring.strongbox.test.log.delete.non.existing";
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .param("logger", loggerPackage)
                .when()
                .delete(url)
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.NOT_FOUND.value()) // check http status code
-               .body(equalTo("Logger '" + loggerPackage + "' not found!"));
-    }
-
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_DELETE_LOGGER" })
-    public void testDeleteLoggerNotFoundWithJsonAcceptHeader()
-    {
-        String url = getContextBaseUrl() + "/logger";
-
-        String loggerPackage = "org.carlspring.strongbox.test.log.json.delete.non.existing";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .param("logger", loggerPackage)
-               .when()
-               .delete(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.NOT_FOUND.value()) // check http status code
-               .body("message", equalTo("Logger '" + loggerPackage + "' not found!"));
+               .body(containsString("Logger '" + loggerPackage + "' not found!"));
     }
 
     @Test
     @WithMockUser(authorities = { "CONFIGURE_LOGS" })
-    public void testDownloadLog()
+    void testDownloadLog()
             throws Exception
     {
         String testLogName = "strongbox-test.log";
@@ -262,11 +176,11 @@ public class LoggingManagementControllerTestIT
              .toFile()
              .deleteOnExit();
 
-        String url = getContextBaseUrl() + "/log/" + testLogName;
+        String url = getContextBaseUrl() + "/log/{path}";
 
         given().accept(MediaType.TEXT_PLAIN_VALUE)
                .when()
-               .get(url)
+               .get(url, testLogName)
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value()); // check http status code
@@ -274,7 +188,7 @@ public class LoggingManagementControllerTestIT
 
     @Test
     @WithMockUser(authorities = { "CONFIGURATION_RETRIEVE_LOGBACK_CFG" })
-    public void testDownloadLogbackConfiguration()
+    void testDownloadLogbackConfiguration()
     {
         String url = getContextBaseUrl() + "/logback";
 
@@ -286,9 +200,12 @@ public class LoggingManagementControllerTestIT
                .statusCode(HttpStatus.OK.value()); // check http status code
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_UPLOAD_LOGBACK_CFG", "CONFIGURATION_RETRIEVE_LOGBACK_CFG" })
-    public void testUploadLogbackConfigurationWithTextAcceptHeader()
+    @ParameterizedTest
+    @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
+                             MediaType.TEXT_PLAIN_VALUE })
+    @WithMockUser(authorities = { "CONFIGURATION_UPLOAD_LOGBACK_CFG",
+                                  "CONFIGURATION_RETRIEVE_LOGBACK_CFG" })
+    void testUploadLogbackConfiguration(String acceptHeader)
     {
         String url = getContextBaseUrl() + "/logback";
 
@@ -302,7 +219,7 @@ public class LoggingManagementControllerTestIT
                                   .asByteArray();
 
 
-        given().accept(MediaType.TEXT_PLAIN_VALUE)
+        given().accept(acceptHeader)
                .contentType(MediaType.APPLICATION_XML_VALUE)
                .body(byteArray)
                .when()
@@ -310,42 +227,16 @@ public class LoggingManagementControllerTestIT
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value()) // check http status code
-               .body(equalTo("Logback configuration uploaded successfully."));
+               .body(containsString("Logback configuration uploaded successfully."));
     }
 
-    @Test
-    @WithMockUser(authorities = { "CONFIGURATION_UPLOAD_LOGBACK_CFG", "CONFIGURATION_RETRIEVE_LOGBACK_CFG"})
-    public void testUploadLogbackConfigurationWithJsonAcceptHeader()
-    {
-        String url = getContextBaseUrl() + "/logback";
-
-        // Obtain the current logback XML.
-        byte[] byteArray = given().accept(MediaType.APPLICATION_XML_VALUE)
-                                  .get(url)
-                                  .peek()
-                                  .then()
-                                  .statusCode(HttpStatus.OK.value())
-                                  .extract()
-                                  .asByteArray();
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .contentType(MediaType.APPLICATION_XML_VALUE)
-               .body(byteArray)
-               .when()
-               .post(url)
-               .peek() // Use peek() to print the output
-               .then()
-               .statusCode(HttpStatus.OK.value()) // check http status code
-               .body("message", equalTo("Logback configuration uploaded successfully."));
-    }
-    
     @Test
     @WithMockUser(authorities = { "VIEW_LOGS" })
-    public void testLogDirectoryForListOfLogFiles()
+    void testLogDirectoryForListOfLogFiles()
     {
         //Given
         //Create dummy test files here
-        Path[] paths = createTestLogFilesAndDirectories(false);
+        Path[] paths = createTestLogFilesAndDirectories();
 
         String[] tempLogFilesArray = new String[4];
         for (int i = 0; i < paths.length; i++)
@@ -354,7 +245,7 @@ public class LoggingManagementControllerTestIT
         }
 
         String logDirectoryHomeUrl = getContextBaseUrl() + "/logs/";
-        
+
         //When
         //Getting the table elements
         String tableElementsAsString = given().contentType(MediaType.TEXT_PLAIN_VALUE)
@@ -363,7 +254,7 @@ public class LoggingManagementControllerTestIT
                                               .body()
                                               .htmlPath()
                                               .getString("html.body.table");
-        
+
         //Assertion Test to see if given file names are contained in the HTML body
         boolean shouldContainLogFilesInHtmlTableElement = false;
         if (tableElementsAsString.contains(tempLogFilesArray[0])
@@ -378,7 +269,7 @@ public class LoggingManagementControllerTestIT
     }
 
     //This method creates temporary log files, and if necessary for subdirectory browsing, a log subdirectory.
-    private Path[] createTestLogFilesAndDirectories(boolean shouldICreateATestSubDirectory)
+    private Path[] createTestLogFilesAndDirectories()
     {
         //If a test directory is needed, a new directory called `test` under `/logs/` will be created.
         //Otherwise the path of `/logs` will be returned.
@@ -386,16 +277,7 @@ public class LoggingManagementControllerTestIT
         Path[] paths = new Path[4];
         try
         {
-
-            if (shouldICreateATestSubDirectory)
-            {
-                logDirectoryPath = Paths.get(propertiesBooter.getLogsDirectory(), "/test");
-                Files.createDirectory(logDirectoryPath);
-            }
-            else
-            {
-                logDirectoryPath = Paths.get(propertiesBooter.getLogsDirectory());
-            }
+            logDirectoryPath = Paths.get(propertiesBooter.getLogsDirectory());
 
             //Create 4 temporary log files from 0 to 3.
             for (int i = 0; i < 4; i++)
@@ -409,53 +291,6 @@ public class LoggingManagementControllerTestIT
         }
 
         return paths;
-    }
-    
-    //This method deletes temporary log files, and if used for subdirectory browsing, the test log subdirectory.
-    private void deleteTestLogFilesAndDirectories(boolean wasATestSubDirectoryCreated)
-    {
-        // This local class extends the SimpleFileVisitor and overrides the `visitFile` method to delete any
-        // Test Log Files upon encountering it.
-        class LogFileVisitor
-                extends SimpleFileVisitor<Path>
-        {
-
-            @Override
-            public FileVisitResult visitFile(Path file,
-                                             BasicFileAttributes attrs)
-                    throws IOException
-            {
-                //Possessive Regex for speed
-                if (file.getFileName().toString().matches("TestLog.*+"))
-                {
-                    Files.delete(file);
-                }
-
-                return FileVisitResult.CONTINUE;
-            }
-        }
-
-        try
-        {
-            if (wasATestSubDirectoryCreated)
-            {
-                Path pathToLogHomeDirectory = Paths.get(propertiesBooter.getLogsDirectory(), "/test");
-
-                Files.walkFileTree(pathToLogHomeDirectory, new LogFileVisitor());
-
-                Files.delete(Paths.get(propertiesBooter.getLogsDirectory(), "/test"));
-            }
-            else
-            {
-                Path pathToLogHomeDirectory = Paths.get(propertiesBooter.getLogsDirectory());
-
-                Files.walkFileTree(pathToLogHomeDirectory, new LogFileVisitor());
-            }
-        }
-        catch (IOException e)
-        {
-            fail("Unable to delete test log files and/or directories!");
-        }
     }
 
 }

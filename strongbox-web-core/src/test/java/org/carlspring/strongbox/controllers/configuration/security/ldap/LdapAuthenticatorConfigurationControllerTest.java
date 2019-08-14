@@ -340,7 +340,8 @@ public class LdapAuthenticatorConfigurationControllerTest
 
         @Primary
         @Bean
-        public HazelcastInstanceId hazelcastInstanceIdLacct() {
+        public HazelcastInstanceId hazelcastInstanceIdLacct()
+        {
             return new HazelcastInstanceId("LdapAuthenticatorConfigurationControllerTest-hazelcast-instance");
         }
 

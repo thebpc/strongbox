@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -153,20 +152,6 @@ public class ProxyConfigurationControllerTestIT
                .statusCode(HttpStatus.BAD_REQUEST.value())
                .body(containsString(FAILED_UPDATE_FORM_ERROR));
 
-    }
-
-    @WithMockUser(authorities = "CONFIGURATION_SET_GLOBAL_PROXY_CFG")
-    @Test
-    public void testSetGlobalProxyConfigurationBadRequestWithTextAcceptHeader()
-    {
-        testSetGlobalProxyConfigurationBadRequest(MediaType.TEXT_PLAIN_VALUE);
-    }
-
-    @WithMockUser(authorities = "CONFIGURATION_SET_GLOBAL_PROXY_CFG")
-    @Test
-    public void testSetGlobalProxyConfigurationBadRequestWithJsonAcceptHeader()
-    {
-        testSetGlobalProxyConfigurationBadRequest(MediaType.APPLICATION_JSON_VALUE);
     }
 
 }

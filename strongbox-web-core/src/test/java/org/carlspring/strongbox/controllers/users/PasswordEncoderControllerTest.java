@@ -7,14 +7,18 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Przemyslaw Fusik
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class PasswordEncoderControllerTest
         extends RestAssuredBaseTest
 {
@@ -28,17 +32,19 @@ public class PasswordEncoderControllerTest
             throws Exception
     {
         super.init();
+
+        setContextBaseUrl("/api/users/password-encoder");
     }
 
     @Test
-    public void shouldEncodeProperly()
+    void shouldEncodeProperly()
     {
-
+        String url = getContextBaseUrl() + "/password";
         final String encodedPassword = given().when()
-                                              .get("/api/users/password-encoder/password")
+                                              .get(url)
                                               .peek()
                                               .then()
-                                              .statusCode(200)
+                                              .statusCode(HttpStatus.OK.value())
                                               .extract()
                                               .asString();
 

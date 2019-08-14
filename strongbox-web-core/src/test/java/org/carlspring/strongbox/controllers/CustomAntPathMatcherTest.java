@@ -9,10 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * Several test cases just to make sure that path variable parsing is correct.
@@ -20,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author Alex Oreshkevich
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class CustomAntPathMatcherTest
 {
 
@@ -57,7 +60,8 @@ public class CustomAntPathMatcherTest
         doTest(artifactPath, path);
     }
 
-    private void doTest(String artifactPath, String path)
+    private void doTest(String artifactPath,
+                        String path)
     {
         final Map<String, String> uriTemplateVariables = new HashMap<>();
 

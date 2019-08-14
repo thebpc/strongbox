@@ -3,7 +3,6 @@ package org.carlspring.strongbox.controllers.environment;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,24 +10,23 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.MediaType;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 /**
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(CONCURRENT)
 public class EnvironmentInfoControllerTestIT
         extends RestAssuredBaseTest
 {
-
-    @Inject
-    private ObjectMapper mapper;
 
     @Override
     @BeforeEach
@@ -36,24 +34,25 @@ public class EnvironmentInfoControllerTestIT
             throws Exception
     {
         super.init();
+        setContextBaseUrl("/api/configuration/environment/info");
     }
 
     @Test
     void testGetEnvironmentInfo()
             throws Exception
     {
-        String path = "/api/configuration/environment/info";
+        String url = getContextBaseUrl();
 
         String envInfo = given().contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .when()
-                                .get(path)
+                                .get(url)
                                 .prettyPeek()
                                 .asString();
 
-        Map<String, List<?>> returnedMap = mapper.readValue(envInfo,
-                                                            new TypeReference<Map<String, List<?>>>()
-                                                            {
-                                                            });
+        Map<String, List<?>> returnedMap = objectMapper.readValue(envInfo,
+                                                                  new TypeReference<Map<String, List<?>>>()
+                                                                  {
+                                                                  });
 
         assertNotNull(returnedMap, "Failed to get all environment info list!");
 
@@ -82,18 +81,18 @@ public class EnvironmentInfoControllerTestIT
     void testGetEnvironmentInfoCheckSorted()
             throws Exception
     {
-        String path = "/api/configuration/environment/info";
+        String url = getContextBaseUrl();
 
         String envInfo = given().contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .when()
-                                .get(path)
+                                .get(url)
                                 .asString();
 
-        JsonNode root = mapper.readTree(envInfo);
+        JsonNode root = objectMapper.readTree(envInfo);
 
         // Environment variables
         JsonNode environmentNode = root.path("environment");
-        ObjectReader listEnvironmentInfoReader = mapper.readerFor(new TypeReference<List<EnvironmentInfo>>()
+        ObjectReader listEnvironmentInfoReader = objectMapper.readerFor(new TypeReference<List<EnvironmentInfo>>()
         {
         });
 
@@ -117,7 +116,7 @@ public class EnvironmentInfoControllerTestIT
 
         // JVM arguments
         JsonNode jvmNode = root.path("jvm");
-        ObjectReader listStringReader = mapper.readerFor(new TypeReference<List<String>>()
+        ObjectReader listStringReader = objectMapper.readerFor(new TypeReference<List<String>>()
         {
         });
         List<String> jvmArguments = listStringReader.readValue(jvmNode);

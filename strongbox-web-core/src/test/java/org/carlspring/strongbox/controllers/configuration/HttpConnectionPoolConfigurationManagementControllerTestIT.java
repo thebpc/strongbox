@@ -15,7 +15,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.http.pool.PoolStats;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -81,32 +80,6 @@ public class HttpConnectionPoolConfigurationManagementControllerTestIT
         validateResponseBodyConnections(response, acceptHeader, newMaxNumberOfConnections);
     }
 
-    @Test
-    public void testSetAndGetMaxNumberOfConnectionsForProxyRepositoryWithJsonAcceptHeader()
-    {
-        int newMaxNumberOfConnections = 200;
-
-        String url = getContextBaseUrl() + "/max/{numberOfConnections}";
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .when()
-               .put(url, newMaxNumberOfConnections)
-               .peek()
-               .then()
-               .statusCode(HttpStatus.OK.value())
-               .body("message", equalTo("Max number of connections for proxy repository was updated successfully."));
-
-        url = getContextBaseUrl();
-
-        given().accept(MediaType.APPLICATION_JSON_VALUE)
-               .when()
-               .get(url)
-               .peek()
-               .then()
-               .statusCode(HttpStatus.OK.value())
-               .body("numberOfConnections", equalTo(newMaxNumberOfConnections));
-    }
-
     @ParameterizedTest
     @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
                              MediaType.TEXT_PLAIN_VALUE })
@@ -141,7 +114,7 @@ public class HttpConnectionPoolConfigurationManagementControllerTestIT
     @ParameterizedTest
     @ValueSource(strings = { MediaType.APPLICATION_JSON_VALUE,
                              MediaType.TEXT_PLAIN_VALUE })
-    void testSetAndGetNumberOfConnectionsForProxyRepositoryWithTextAcceptHeader(String acceptHeader)
+    void testSetAndGetNumberOfConnectionsForProxyRepository(String acceptHeader)
     {
         Configuration configuration = configurationManager.getConfiguration();
         Optional<Repository> repositoryOpt = configuration.getStorages()
