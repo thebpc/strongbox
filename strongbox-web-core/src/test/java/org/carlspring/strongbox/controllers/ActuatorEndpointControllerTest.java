@@ -3,15 +3,14 @@ package org.carlspring.strongbox.controllers;
 import org.carlspring.strongbox.booters.PropertiesBooter;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithUserDetails;
 
 import javax.inject.Inject;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -33,7 +32,7 @@ public class ActuatorEndpointControllerTest
             throws Exception
     {
         super.init();
-        setContextBaseUrl(getContextBaseUrl() + "/api/monitoring");
+        setContextBaseUrl("/api/monitoring");
     }
 
     @Test
@@ -43,7 +42,7 @@ public class ActuatorEndpointControllerTest
 
         String url = getContextBaseUrl() + "/info";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
                .get(url)
                .then()
@@ -52,7 +51,7 @@ public class ActuatorEndpointControllerTest
 
         String version = propertiesBooter.getStrongboxVersion();
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
                .get(url)
                .then()
@@ -61,7 +60,7 @@ public class ActuatorEndpointControllerTest
 
         String revision = propertiesBooter.getStrongboxRevision();
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
                .get(url)
                .then()

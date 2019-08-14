@@ -1,28 +1,28 @@
 package org.carlspring.strongbox.rest.common;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.carlspring.strongbox.rest.client.RestAssuredArtifactClient.OK;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.carlspring.commons.io.MultipleDigestOutputStream;
+import org.carlspring.strongbox.rest.client.RestAssuredArtifactClient;
+import org.carlspring.strongbox.users.domain.Privileges;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import org.apache.commons.io.output.NullOutputStream;
-import org.carlspring.commons.io.MultipleDigestOutputStream;
-import org.carlspring.strongbox.rest.client.RestAssuredArtifactClient;
-import org.carlspring.strongbox.users.domain.Privileges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.context.WebApplicationContext;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.carlspring.strongbox.rest.client.RestAssuredArtifactClient.OK;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author carlspring
@@ -72,7 +72,7 @@ public abstract class NpmRestAssuredBaseTest
     {
         logger.trace("[pathExists] URL -> " + url);
 
-        return given().header("user-agent", "npm/*")
+        return given().header(HttpHeaders.USER_AGENT, "npm/*")
                       .contentType(MediaType.TEXT_PLAIN_VALUE)
                       .when()
                       .get(url)

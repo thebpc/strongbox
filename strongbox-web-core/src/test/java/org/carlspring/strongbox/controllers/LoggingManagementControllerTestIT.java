@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -46,7 +45,7 @@ public class LoggingManagementControllerTestIT
             throws Exception
     {
         super.init();
-        setContextBaseUrl(getContextBaseUrl() + "/api/logging");
+        setContextBaseUrl("/api/logging");
     }
 
     @Test
@@ -60,7 +59,7 @@ public class LoggingManagementControllerTestIT
     {
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .param("logger", loggerPackage)
                .param("level", level)
                .param("appenderName", appender)
@@ -83,7 +82,7 @@ public class LoggingManagementControllerTestIT
     {
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .param("logger", loggerPackage)
                .param("level", level)
                .param("appenderName", appender)
@@ -106,7 +105,7 @@ public class LoggingManagementControllerTestIT
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -128,7 +127,7 @@ public class LoggingManagementControllerTestIT
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -146,7 +145,7 @@ public class LoggingManagementControllerTestIT
         String url = getContextBaseUrl() + "/logger";
         String loggerPackage = "org.carlspring.strongbox.test.log.text.non.existing";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -164,7 +163,7 @@ public class LoggingManagementControllerTestIT
         String url = getContextBaseUrl() + "/logger";
         String loggerPackage = "org.carlspring.strongbox.test.log.json.update.non.existing";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .param("logger", loggerPackage)
                .param("level", LOGGER_LEVEL)
                .when()
@@ -186,7 +185,7 @@ public class LoggingManagementControllerTestIT
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .param("logger", packageName)
                .when()
                .delete(url)
@@ -207,7 +206,7 @@ public class LoggingManagementControllerTestIT
 
         String url = getContextBaseUrl() + "/logger";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .param("logger", packageName)
                .when()
                .delete(url)
@@ -225,7 +224,7 @@ public class LoggingManagementControllerTestIT
 
         String loggerPackage = "org.carlspring.strongbox.test.log.text.delete.non.existing";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .param("logger", loggerPackage)
                .when()
                .delete(url)
@@ -243,7 +242,7 @@ public class LoggingManagementControllerTestIT
 
         String loggerPackage = "org.carlspring.strongbox.test.log.json.delete.non.existing";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .param("logger", loggerPackage)
                .when()
                .delete(url)
@@ -265,7 +264,7 @@ public class LoggingManagementControllerTestIT
 
         String url = getContextBaseUrl() + "/log/" + testLogName;
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .when()
                .get(url)
                .peek() // Use peek() to print the output
@@ -279,7 +278,7 @@ public class LoggingManagementControllerTestIT
     {
         String url = getContextBaseUrl() + "/logback";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+        given().accept(MediaType.APPLICATION_XML_VALUE)
                .when()
                .get(url)
                .peek() // Use peek() to print the output
@@ -294,7 +293,7 @@ public class LoggingManagementControllerTestIT
         String url = getContextBaseUrl() + "/logback";
 
         // Obtain the current logback XML.
-        byte[] byteArray = given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+        byte[] byteArray = given().accept(MediaType.APPLICATION_XML_VALUE)
                                   .get(url)
                                   .peek()
                                   .then()
@@ -303,7 +302,7 @@ public class LoggingManagementControllerTestIT
                                   .asByteArray();
 
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+        given().accept(MediaType.TEXT_PLAIN_VALUE)
                .contentType(MediaType.APPLICATION_XML_VALUE)
                .body(byteArray)
                .when()
@@ -321,7 +320,7 @@ public class LoggingManagementControllerTestIT
         String url = getContextBaseUrl() + "/logback";
 
         // Obtain the current logback XML.
-        byte[] byteArray = given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+        byte[] byteArray = given().accept(MediaType.APPLICATION_XML_VALUE)
                                   .get(url)
                                   .peek()
                                   .then()
@@ -329,7 +328,7 @@ public class LoggingManagementControllerTestIT
                                   .extract()
                                   .asByteArray();
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(MediaType.APPLICATION_XML_VALUE)
                .body(byteArray)
                .when()

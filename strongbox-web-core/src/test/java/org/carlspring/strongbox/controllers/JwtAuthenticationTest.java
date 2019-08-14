@@ -50,7 +50,7 @@ public class JwtAuthenticationTest
     {
         super.init();
 
-        setContextBaseUrl(getContextBaseUrl() + "/api/users");
+        setContextBaseUrl("/api/users");
         TestSecurityContextHolder.clearContext();
         SecurityContextHolder.clearContext();
     }
@@ -59,14 +59,14 @@ public class JwtAuthenticationTest
     public void testJWTAuthShouldPassWithToken()
             throws Exception
     {
-        String url = getContextBaseUrl();
+        String url = getContextBaseUrl() + "/login";
 
         String basicAuth = "Basic YWRtaW46cGFzc3dvcmQ=";
 
         String body = given().header(HttpHeaders.AUTHORIZATION, basicAuth)
                              .accept(MediaType.APPLICATION_JSON_VALUE)
                              .when()
-                             .get(getContextBaseUrl() + "/login")
+                             .get(url)
                              .then()
                              .statusCode(HttpStatus.OK.value())
                              .extract()
@@ -74,6 +74,7 @@ public class JwtAuthenticationTest
         TestSecurityContextHolder.clearContext();
         SecurityContextHolder.clearContext();
 
+        url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
                .get(url)

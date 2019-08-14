@@ -4,11 +4,9 @@ import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.forms.users.UserForm;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
-
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +29,7 @@ public class SpringSecurityTest
             throws Exception
     {
         super.init();
-        setContextBaseUrl(getContextBaseUrl() + "/api/users");
+        setContextBaseUrl("/api/users");
     }
 
     @Test
@@ -39,9 +37,10 @@ public class SpringSecurityTest
     {
         final String username = "admin";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        String url = getContextBaseUrl() + "/{username}";
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/{username}", username)
+               .get(url, username)
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -55,9 +54,10 @@ public class SpringSecurityTest
         SecurityContextHolder.getContext()
                              .setAuthentication(null);
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        String url = getContextBaseUrl();
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek() // Use peek() to print the output
                .then()
                .statusCode(HttpStatus.UNAUTHORIZED.value());
@@ -69,11 +69,13 @@ public class SpringSecurityTest
     {
         UserForm user = new UserForm();
         user.setUsername("someNewUserName");
+
+        String url = getContextBaseUrl();
         given().contentType(MediaType.APPLICATION_JSON_VALUE)
                .accept(MediaType.APPLICATION_JSON_VALUE)
                .body(user)
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .body("error", CoreMatchers.equalTo("forbidden"))

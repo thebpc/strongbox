@@ -3,6 +3,7 @@ package org.carlspring.strongbox.controllers.forms;
 import org.carlspring.strongbox.artifact.coordinates.MavenArtifactCoordinates;
 import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
+import org.carlspring.strongbox.storage.repository.RepositoryTypeEnum;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,15 +27,16 @@ public class FormDataControllerTestIT
             throws Exception
     {
         super.init();
-        setContextBaseUrl(getContextBaseUrl() + "/api/formData");
+        setContextBaseUrl("/api/formData");
     }
 
     @Test
     public void testGetUserFields()
     {
+        String url = getContextBaseUrl() + "/userfields";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/userFields")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -45,9 +47,10 @@ public class FormDataControllerTestIT
     @Test
     public void testGetStorageFields()
     {
+        String url = getContextBaseUrl() + "/storageFields";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/storageFields")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -58,9 +61,10 @@ public class FormDataControllerTestIT
     @Test
     public void testGetStorageNames()
     {
+        String url = getContextBaseUrl() + "/storageNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl() + "/storageNames")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -71,9 +75,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetStorageNamesFilteredByTerm()
     {
+        String url = getContextBaseUrl() + "/storageNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("term", "prox")
                .when()
-               .get(getContextBaseUrl() + "/storageNames?term=prox")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -84,9 +90,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesFilteredByStorageId()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("storageId", STORAGE0)
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?storageId=storage0")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -97,9 +105,12 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesFilteredStorageIdAndSearchTerm()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("storageId", STORAGE0)
+               .param("term", "SHOT")
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?storageId=storage0&term=SHOT")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -110,9 +121,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageId()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -124,9 +137,12 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageId()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", STORAGE0)
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&storageId=storage0")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -138,9 +154,13 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdAndTerm()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", STORAGE0)
+               .param("term", "sna")
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&storageId=storage0&term=sna")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -152,9 +172,13 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByByStorageIdAndTypeHosted()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", STORAGE0)
+               .param("type", RepositoryTypeEnum.HOSTED.getType())
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&type=hosted&storageId=storage0")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -167,9 +191,14 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdTermAndTypeHosted()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", STORAGE0)
+               .param("type", RepositoryTypeEnum.HOSTED.getType())
+               .param("term", "sn")
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&type=hosted&storageId=storage0&term=sn")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -184,10 +213,13 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdAndTypeGroup()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", "storage-common-proxies")
+               .param("type", RepositoryTypeEnum.GROUP.getType())
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNames?withStorageId=true&type=group&storageId=storage-common-proxies")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -198,11 +230,14 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdTermAndTypeGroup()
     {
-
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", "storage-common-proxies")
+               .param("type", RepositoryTypeEnum.GROUP.getType())
+               .param("term", "group-com")
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNames?withStorageId=true&type=group&storageId=storage-common-proxies&term=group-com")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -218,9 +253,13 @@ public class FormDataControllerTestIT
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdAndTypeProxy()
     {
         // storage0 has no proxies.
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", STORAGE0)
+               .param("type", RepositoryTypeEnum.PROXY.getType())
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&type=proxy&storageId=storage0")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -228,9 +267,11 @@ public class FormDataControllerTestIT
                .body("formDataValues[0].values", hasSize(equalTo(0)));
 
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", "storage-common-proxies")
+               .param("type", RepositoryTypeEnum.PROXY.getType())
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNames?withStorageId=true&type=proxy&storageId=storage-common-proxies")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -241,10 +282,12 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByLayout()
     {
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("layout", MavenArtifactCoordinates.LAYOUT_NAME)
                .when()
-               .get(getContextBaseUrl() + "/repositoryNames?withStorageId=true&layout=" +
-                    MavenArtifactCoordinates.LAYOUT_NAME)
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -259,11 +302,14 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesWithStorageIdFilteredByStorageIdTermAndTypeProxy()
     {
-
+        String url = getContextBaseUrl() + "/repositoryNames";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("withStorageId", true)
+               .param("storageId", "storage-common-proxies")
+               .param("type", RepositoryTypeEnum.PROXY.getType())
+               .param("term", "maven")
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNames?withStorageId=true&type=proxy&storageId=storage-common-proxies&term=maven")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -279,10 +325,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesInGroup()
     {
+        String url = getContextBaseUrl() + "/repositoryNamesInGroupRepositories";
         given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(getContextBaseUrl() + "/repositoryNamesInGroupRepositories")
+                .get(url)
                 .peek()
                 .then()
                 .statusCode(HttpStatus.OK.value())
@@ -295,9 +342,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesInGroupFilteredByTerm()
     {
+        String url = getContextBaseUrl() + "/repositoryNamesInGroupRepositories";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("term", "car")
                .when()
-               .get(getContextBaseUrl() + "/repositoryNamesInGroupRepositories?term=car")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -310,10 +359,11 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesInGroupFilteredByStorageId()
     {
+        String url = getContextBaseUrl() + "/repositoryNamesInGroupRepositories";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("storageId", "storage-common-proxies")
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNamesInGroupRepositories?storageId=storage-common-proxies")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -326,10 +376,12 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesInGroupFilteredByStorageIdAndGroupRepositoryId()
     {
+        String url = getContextBaseUrl() + "/repositoryNamesInGroupRepositories";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("storageId", "public")
+               .param("groupRepositoryId", "maven-group")
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNamesInGroupRepositories?storageId=public&groupRepositoryId=maven-group")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -344,10 +396,13 @@ public class FormDataControllerTestIT
     @Test
     public void testGetRepositoryNamesInGroupFilteredByStorageIdAndGroupRepositoryIdAndTerm()
     {
+        String url = getContextBaseUrl() + "/repositoryNamesInGroupRepositories";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
+               .param("storageId", "storage-common-proxies")
+               .param("groupRepositoryId", "group-common-proxies")
+               .param("term", "car")
                .when()
-               .get(getContextBaseUrl() +
-                    "/repositoryNamesInGroupRepositories?storageId=storage-common-proxies&groupRepositoryId=group-common-proxies&term=car")
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
