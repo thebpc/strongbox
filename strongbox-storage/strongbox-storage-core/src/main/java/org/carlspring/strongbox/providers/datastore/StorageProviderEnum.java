@@ -11,17 +11,16 @@ public enum StorageProviderEnum
 
     FILESYSTEM("file-system");
 
-    private String value;
+    private String description;
 
-    StorageProviderEnum(String value)
+    StorageProviderEnum(String description)
     {
-        this.value = value;
+        this.description = description;
     }
 
     @Override
     public String describe()
     {
-        return value;
+        return description;
     }
-
 }
