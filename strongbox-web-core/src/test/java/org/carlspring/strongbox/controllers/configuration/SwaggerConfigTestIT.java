@@ -5,13 +5,15 @@ import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
 @IntegrationTest
+@Execution(CONCURRENT)
 public class SwaggerConfigTestIT extends RestAssuredBaseTest
 {
 
@@ -28,7 +30,7 @@ public class SwaggerConfigTestIT extends RestAssuredBaseTest
     {
         String url = getContextBaseUrl() + "/docs/rest/api.html";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
+        given().accept(MediaType.TEXT_HTML_VALUE)
                .when()
                .get(url)
                .peek() // Use peek() to print the output
@@ -42,7 +44,7 @@ public class SwaggerConfigTestIT extends RestAssuredBaseTest
     {
         String url = getContextBaseUrl() + "/v2/api-docs";
 
-        given().header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
                .get(url)
                .peek() // Use peek() to print the output

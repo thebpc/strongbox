@@ -6,9 +6,9 @@ import org.carlspring.strongbox.authentication.api.AuthenticationItems;
 import org.carlspring.strongbox.authentication.external.ldap.LdapAuthenticationConfigurationManager;
 import org.carlspring.strongbox.authentication.external.ldap.LdapConfiguration;
 import org.carlspring.strongbox.authentication.support.ExternalRoleMapping;
+import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.config.hazelcast.HazelcastConfiguration;
 import org.carlspring.strongbox.config.hazelcast.HazelcastInstanceId;
-import org.carlspring.strongbox.config.IntegrationTest;
 import org.carlspring.strongbox.forms.configuration.security.ldap.LdapConfigurationTestForm;
 import org.carlspring.strongbox.rest.common.RestAssuredBaseTest;
 
@@ -23,6 +23,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.context.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +31,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * @author Przemyslaw Fusik
@@ -38,6 +40,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
  */
 @Disabled
 @IntegrationTest
+@Execution(SAME_THREAD)
 public class LdapAuthenticatorConfigurationControllerTest
         extends RestAssuredBaseTest
 {
@@ -76,9 +79,10 @@ public class LdapAuthenticatorConfigurationControllerTest
     @Test
     public void shouldReturnProperLdapConfiguration()
     {
+        String url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .body("url", startsWith("ldap://127.0.0.1"))
@@ -115,18 +119,19 @@ public class LdapAuthenticatorConfigurationControllerTest
         configuration.getUserDnPatternList().add("uid={0},ou=AllUsers");
         configuration.setUrl("ldap://127.0.0.1:33389/dc=carlspring,dc=com");
 
+        String url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(configuration)
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value());
 
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .body("url", startsWith("ldap://127.0.0.1"))
@@ -161,11 +166,12 @@ public class LdapAuthenticatorConfigurationControllerTest
 
         form.getConfiguration().setUrl(null);
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -183,11 +189,12 @@ public class LdapAuthenticatorConfigurationControllerTest
 
         form.getConfiguration().setUrl("http://host:port?thisIsWrongUrl=true");
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -211,11 +218,12 @@ public class LdapAuthenticatorConfigurationControllerTest
         subform.getGroupSearch().setGroupSearchBase("ou=Employee");
         subform.getGroupSearch().setGroupSearchFilter("(employee={0})");
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -234,11 +242,12 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setUsername("mtodorov");
         form.setPassword("password");
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -253,11 +262,12 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setUsername("daddy");
         form.setPassword("mummy");
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -272,11 +282,12 @@ public class LdapAuthenticatorConfigurationControllerTest
         form.setUsername("mtodorov");
         form.setPassword("password");
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -297,11 +308,12 @@ public class LdapAuthenticatorConfigurationControllerTest
                                           new ExternalRoleMapping("LogsManager", "LOGS_MANAGER"))
                                       .collect(Collectors.toList()));
 
+        String url = getContextBaseUrl() + "/test";
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(ContentType.JSON)
                .body(form)
                .when()
-               .put(getContextBaseUrl() + "/test")
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())

@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,13 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(SAME_THREAD)
 public class ServerConfigurationControllerTestIT
         extends RestAssuredBaseTest
 {
@@ -42,7 +45,7 @@ public class ServerConfigurationControllerTestIT
     {
         super.init();
 
-        setContextBaseUrl(getContextBaseUrl() + "/api/configuration/strongbox");
+        setContextBaseUrl("/api/configuration/strongbox");
     }
 
     @Test

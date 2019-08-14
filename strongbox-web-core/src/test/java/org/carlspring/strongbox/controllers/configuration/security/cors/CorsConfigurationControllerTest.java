@@ -13,6 +13,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
@@ -21,12 +22,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * @author Przemyslaw Fusik
  * @author Pablo Tirado
  */
 @IntegrationTest
+@Execution(SAME_THREAD)
 public class CorsConfigurationControllerTest
         extends RestAssuredBaseTest
 {
@@ -56,11 +59,12 @@ public class CorsConfigurationControllerTest
     @Test
     public void testUpdateWithEmptyCollectionAndJsonResponse()
     {
+        String url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.emptyList()))
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -69,7 +73,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -80,11 +84,12 @@ public class CorsConfigurationControllerTest
     @Test
     public void testUpdateWithEmptyCollectionAndTextResponse()
     {
+        String url = getContextBaseUrl();
         given().accept(MediaType.TEXT_PLAIN_VALUE)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.emptyList()))
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -93,7 +98,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -103,11 +108,12 @@ public class CorsConfigurationControllerTest
     @Test
     public void testAllowOneOrigin()
     {
+        String url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.singletonList("http://example.com")))
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -116,7 +122,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -126,11 +132,12 @@ public class CorsConfigurationControllerTest
     @Test
     public void testAllowAllOrigins()
     {
+        String url = getContextBaseUrl();
         given().log().all().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Collections.singletonList("*")))
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -139,7 +146,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -150,11 +157,12 @@ public class CorsConfigurationControllerTest
     @Test
     public void testAllowMultipleOrigins()
     {
+        String url = getContextBaseUrl();
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .body(new CorsConfigurationForm(Arrays.asList("http://example.com", "https://github.com/strongbox", "http://carlspring.org")))
                .when()
-               .put(getContextBaseUrl())
+               .put(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())
@@ -163,7 +171,7 @@ public class CorsConfigurationControllerTest
         // follow-up check to ensure records has been properly saved.
         given().accept(MediaType.APPLICATION_JSON_VALUE)
                .when()
-               .get(getContextBaseUrl())
+               .get(url)
                .peek()
                .then()
                .statusCode(HttpStatus.OK.value())

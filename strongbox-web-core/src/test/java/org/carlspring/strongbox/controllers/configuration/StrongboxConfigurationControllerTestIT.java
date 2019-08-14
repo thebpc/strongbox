@@ -7,9 +7,9 @@ import org.carlspring.strongbox.storage.StorageDto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.parallel.Execution;
-import org.springframework.http.HttpStatus;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import static org.carlspring.strongbox.net.MediaType.APPLICATION_YAML_VALUE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,11 +39,9 @@ public class StrongboxConfigurationControllerTestIT
     public void testGetAndSetConfiguration(String acceptHeader)
     {
         final String storageId = "storage3";
-
-        MutableConfiguration configuration = getConfigurationFromRemote();
-
         StorageDto storage = new StorageDto(storageId);
 
+        MutableConfiguration configuration = getConfigurationFromRemote();
         configuration.addStorage(storage);
 
         String url = getContextBaseUrl();
@@ -61,7 +59,7 @@ public class StrongboxConfigurationControllerTestIT
         assertNotNull(c.getStorage(storageId), "Failed to create storage!");
     }
 
-    public MutableConfiguration getConfigurationFromRemote()
+    private MutableConfiguration getConfigurationFromRemote()
     {
         String url = getContextBaseUrl();
 
